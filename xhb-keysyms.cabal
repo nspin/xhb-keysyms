@@ -1,0 +1,17 @@
+Name:                xhb-keysyms
+Version:             0.1
+license:             MIT
+license-file:        LICENSE
+author:              Nick Spinale
+maintainer:          spinalen@carleton.edu
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+
+library
+
+  build-depends:     base, xhb
+  exposed-modules:   Graphics.XHB.KeySym.Defs
+                   , Graphics.XHB.KeySym.Names
+  other-modules:     Graphics.XHB.KeySym.Names.Internal

@@ -1,0 +1,20 @@
+Name:                xhb-keysyms-build-utils
+Version:             0.1
+license:             MIT
+license-file:        LICENSE
+author:              Nick Spinale
+maintainer:          spinalen@carleton.edu
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+
+executable gen-xhb-keysyms
+
+  main-is:           Main.hs
+  build-depends:     base
+                   , directory
+                   , filepath
+                   , text
+                   , attoparsec
+                   , haskell-src-exts

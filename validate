@@ -1,0 +1,12 @@
+#!/bin/sh
+# takes keysyms.h as stdin, and checks it against its Defs.hs argument
+
+if [ -z "$1" ]; then
+    echo "expected Defs.hs file to validate"
+    exit 1
+fi
+
+tmp=${TMPDIR:-/tmp}/xhb-keysyms-build-util-validate-$RANDOM
+grep '::' $1 | cut -d ' ' -f 1 | cut -c 2- > $tmp
+thediff=$(cat | grep '^#define XK_' | cut -d ' ' -f 2 | cut -c 2- | diff $tmp -)
+[ -z "$thediff" ]
