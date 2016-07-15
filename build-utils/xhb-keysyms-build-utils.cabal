@@ -13,8 +13,6 @@ executable gen-xhb-keysyms
 
   main-is:           Main.hs
   build-depends:     base
-                   , directory
-                   , filepath
                    , text
                    , attoparsec
                    , haskell-src-exts
