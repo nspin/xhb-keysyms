@@ -38,9 +38,10 @@ in with nixpkgs; rec {
 
       cat $ksdSrc | $buildUtils/bin/gen-xhb-keysyms $outdir/Defs.hs $outdir/Names/Internal.hs
 
-      # grep '::' $outdir/Defs.hs | cut -d ' ' -f 1 | cut -c 2- > foo
-      # thediff=$(cat | grep '^#define XK_' | cut -d ' ' -f 2 | cut -c 2- | diff foo -)
-      # [ -z "$thediff" ]
+      # validation
+      grep '::' $outdir/Defs.hs | cut -d ' ' -f 1 | cut -c 2- > foo
+      thediff=$(cat $ksdSrc | grep '^#define XK_' | cut -d ' ' -f 2 | cut -c 2- | diff foo -)
+      [ -z "$thediff" ]
 
     '';
 
