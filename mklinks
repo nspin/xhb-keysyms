@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Generate the entire source into the nix store,
+# then populate . with links to generated files
+# to allow you to develop as though you had generated
+# them into .
+
+cd $(dirname $0)
+dir=$(nix-build -A xhb-keysyms-src --no-out-link)
+ln -sfT $dir/gen gen

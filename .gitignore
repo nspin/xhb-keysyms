@@ -1,2 +1,3 @@
-Graphics/XHB/KeySym/Defs.hs
-Graphics/XHB/KeySym/Names/Internal.hs
+gen
+dist
+result
