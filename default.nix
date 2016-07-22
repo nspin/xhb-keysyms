@@ -1,10 +1,14 @@
-{ nixpkgs ? import <nixpkgs> {}, haskellPackages ? null }:
+{ pkgs ? (import <nixpkgs> {}).pkgs, compiler ? null }:
 
-let hp = if haskellPackages == null
-          then nixpkgs.haskellPackages
-          else haskellPackages;
+let
 
-in with nixpkgs; rec {
+  inherit pkgs;
+
+  hp = if compiler == null
+       then pkgs.haskellPackages
+       else pkgs.haskell.packages.${compiler};
+
+in with pkgs; rec {
 
   keysymdef-src = fetchurl {
     url = https://cgit.freedesktop.org/xorg/proto/x11proto/plain/keysymdef.h;
