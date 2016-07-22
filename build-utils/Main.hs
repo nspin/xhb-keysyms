@@ -48,27 +48,22 @@ emptyLoc :: SrcLoc
 emptyLoc = SrcLoc "" 0 0
 
 impXhb :: ImportDecl
-impXhb = ImportDecl { importLoc = emptyLoc
-                    , importModule = ModuleName "Graphics.XHB"
-                    , importQualified = False
-                    , importSrc = False
-                    , importSafe = False
-                    , importPkg = Nothing
-                    , importAs = Nothing
-                    , importSpecs = Nothing
-                    }
-
+impXhb = emptyImp "Graphics.XHB"
 
 impDefs :: ImportDecl
-impDefs = ImportDecl { importLoc = emptyLoc
-                     , importModule = ModuleName "Graphics.XHB.KeySym.Defs"
-                     , importQualified = False
-                     , importSrc = False
-                     , importSafe = False
-                     , importPkg = Nothing
-                     , importAs = Nothing
-                     , importSpecs = Nothing
-                     }
+impDefs = emptyImp "Graphics.XHB.KeySym.Defs"
+
+emptyImp :: String -> ImportDecl
+emptyImp name = ImportDecl
+    { importLoc = emptyLoc
+    , importModule = ModuleName name
+    , importQualified = False
+    , importSrc = False
+    , importSafe = False
+    , importPkg = Nothing
+    , importAs = Nothing
+    , importSpecs = Nothing
+    }
 
 
 namesModule :: [KeySymDef] -> Module
@@ -87,7 +82,7 @@ namesModule defs = Module emptyLoc mname [] Nothing spec [impXhb, impDefs] [sig,
 
 nameTuple :: KeySymDef -> Exp
 nameTuple (KeySymDef n v mc) = Tuple Boxed
-    [ Var (UnQual (nameSym n))
+    [ Lit (Int v)
     , Lit $ String n
     , case mc of
         Just c -> App (Con (qname "Just")) (Lit (Char c))
