@@ -22,7 +22,7 @@ in with pkgs; rec {
     name = "xhb-keysyms-src";
     version = xhb-keysyms.version;
 
-    copyFiles = [./src ./README.md ./LICENSE];
+    copyFiles = [./src ./README.md ./LICENSE ./xhb-keysyms.cabal];
 
     buildUtils = xhb-keysyms-build-utils;
     ksdSrc = keysymdef-src;
@@ -56,7 +56,7 @@ in with pkgs; rec {
               mkDerivation {
                 pname = "xhb-keysyms";
                 version = "0.1";
-                src = ./.;
+                src = xhb-keysyms-src;
                 libraryHaskellDepends = [ base xhb ];
                 license = stdenv.lib.licenses.mit;
               };
