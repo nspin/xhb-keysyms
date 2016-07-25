@@ -2,14 +2,15 @@
 
 module Main where
 
+import Parse
+
 import Prelude hiding (getContents, takeWhile)
 import Control.Applicative
 import Control.Monad
 import Data.Char
 import Data.List
-import Data.Text (Text, unpack)
+import Data.Function
 import Data.Text.IO (getContents)
-import Data.Attoparsec.Text
 import Data.Maybe
 import System.Exit
 import System.Environment
@@ -23,14 +24,15 @@ main :: IO ()
 main = do
     args <- getArgs
     case args of
-        [defsOut, namesOut] -> do
+        [defsOut, namesOut, alphOut] -> do
             file <- getContents
             when (file == file) $ return ()
-            case parseOnly keySymDefs file of
+            case parseDefs file of
                 Left err -> die $ "error parsing stdin: " ++ err
                 Right defs -> do
                     writeFile defsOut . prettyPrint $ defsModule defs
                     writeFile namesOut . prettyPrint $ namesModule defs
+                    writeFile alphOut . prettyPrint . alphModule $ toPairs defs
         _ -> die "Usage: gen-xhb-keysyms <defsOut, namesOut>"
 
 
@@ -63,6 +65,7 @@ emptyImp name = ImportDecl
     , importSpecs = Nothing
     }
 
+--
 
 namesModule :: [KeySymDef] -> Module
 namesModule defs = Module emptyLoc mname [] Nothing spec imps [sig, bind]
@@ -79,7 +82,6 @@ namesModule defs = Module emptyLoc mname [] Nothing spec imps [sig, bind]
     rhs = App (Var . UnQual $ Ident "fromAscList") . List . map nameTuple $ sortBy comp defs
     comp (KeySymDef _ i _) (KeySymDef _ j _) = compare i j
     imps = [ emptyImp "Graphics.XHB"
-           , emptyImp "Graphics.XHB.KeySym.Defs"
            , (emptyImp "Data.Map")
                 { importSpecs = Just ( False, [ IVar (Ident "fromAscList")
                                               , IAbs NoNamespace (Ident "Map")
@@ -94,11 +96,12 @@ nameTuple (KeySymDef n v mc) = Tuple Boxed
     [ Lit (Int v)
     , Tuple Boxed [ Lit $ String n
                   , case mc of
-                      Just c -> App (Con (qname "Just")) (Lit (Char c))
+                      Just (c, alph) -> App (Con (qname "Just")) (Lit (Char c))
                       Nothing -> Con (qname "Nothing")
                   ]
     ]
 
+--
 
 defsModule :: [KeySymDef] -> Module
 defsModule defs = Module emptyLoc mname [] Nothing Nothing [emptyImp "Graphics.XHB"] decls
@@ -114,38 +117,29 @@ defDecl (KeySymDef n v _) = (sig, bind)
     sig  = TypeSig emptyLoc [name] . TyCon $ qname "KEYSYM"
     bind = PatBind emptyLoc (PVar name) (UnGuardedRhs . Lit . Int $ v) Nothing
 
+--
 
--------------
--- PARSING --
--------------
-
-
-data KeySymDef = KeySymDef String Integer (Maybe Char)
-    deriving Show
-
-
-keySymDefs :: Parser [KeySymDef]
-keySymDefs = catMaybes <$> many (Just <$> keySymDef <|> Nothing <$ restOfLine)
-
-
-keySymDef :: Parser KeySymDef
-keySymDef = do
-    string "#define XK_"
-    name <- unpack <$> takeTill (== ' ')
-    skipSpace
-    string "0x"
-    code <- hexadecimal :: Parser Integer
-    skipWhile (== ' ')
-    ucode <- Just <$> comment <|> return Nothing
-    restOfLine
-    return $ KeySymDef name code ucode
+alphModule :: [(Integer, Integer)] -> Module
+alphModule defs = Module emptyLoc mname [] Nothing spec imps decls
   where
-    comment = do
-        string "/* U+"
-        n <- hexadecimal
-        manyTill anyChar (string "*/")
-        return $ chr n
-
-
-restOfLine :: Parser Text
-restOfLine = takeTill isEndOfLine <* endOfLine
+    mname = ModuleName "Graphics.XHB.KeySym.Alph.Internal"
+    spec = Just [ EVar . UnQual $ Ident "lowerToUpper"
+                , EVar . UnQual $ Ident "upperToLower"
+                ]
+    imps = [ emptyImp "Graphics.XHB"
+           , (emptyImp "Data.Map")
+                { importSpecs = Just ( False, [ IVar (Ident "fromAscList")
+                                              , IAbs NoNamespace (Ident "Map")
+                                              ]
+                                     )
+                }
+           ]
+    decls = declsOf fst "lowerToUpper" ++ declsOf snd "upperToLower"
+    declsOf f nam = [sig, bind]
+      where
+        sig = TypeSig emptyLoc [Ident nam]
+                (TyApp (TyApp (tqname "Map") (tqname "KEYSYM"))
+                       (tqname "KEYSYM"))
+        bind = PatBind emptyLoc (PVar (Ident nam)) (UnGuardedRhs rhs) Nothing
+        rhs = App (Var . UnQual $ Ident "fromAscList") . List . map tup $ sortBy (compare `on` f) defs
+        tup (x, y) = Tuple Boxed [Lit (Int x), Lit (Int y)]

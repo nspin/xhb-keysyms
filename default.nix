@@ -39,8 +39,9 @@ in with pkgs; rec {
 
       outdir=$out/gen/Graphics/XHB/KeySym
       mkdir -p $outdir/Names
+      mkdir -p $outdir/Alph
 
-      cat $ksdSrc | $buildUtils/bin/gen-xhb-keysyms $outdir/Defs.hs $outdir/Names/Internal.hs
+      cat $ksdSrc | $buildUtils/bin/gen-xhb-keysyms $outdir/Defs.hs $outdir/Names/Internal.hs $outdir/Alph/Internal.hs
 
       # validation
       grep '::' $outdir/Defs.hs | cut -d ' ' -f 1 | cut -c 2- > foo

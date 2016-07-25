@@ -15,4 +15,6 @@ library
   build-depends:     base, xhb, containers
   exposed-modules:   Graphics.XHB.KeySym.Defs
                    , Graphics.XHB.KeySym.Names
+                   , Graphics.XHB.KeySym.Alph
   other-modules:     Graphics.XHB.KeySym.Names.Internal
+                   , Graphics.XHB.KeySym.Alph.Internal
