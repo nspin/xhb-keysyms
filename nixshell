@@ -1,0 +1,2 @@
+#!/bin/sh
+./mklinks && nix-shell -A xhb-keysyms.env

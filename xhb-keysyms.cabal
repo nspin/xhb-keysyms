@@ -12,7 +12,7 @@ cabal-version:       >=1.10
 library
 
   hs-source-dirs:    src, gen
-  build-depends:     base, xhb
+  build-depends:     base, xhb, containers
   exposed-modules:   Graphics.XHB.KeySym.Defs
                    , Graphics.XHB.KeySym.Names
   other-modules:     Graphics.XHB.KeySym.Names.Internal

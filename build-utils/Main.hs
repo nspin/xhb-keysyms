@@ -6,6 +6,7 @@ import Prelude hiding (getContents, takeWhile)
 import Control.Applicative
 import Control.Monad
 import Data.Char
+import Data.List
 import Data.Text (Text, unpack)
 import Data.Text.IO (getContents)
 import Data.Attoparsec.Text
@@ -41,17 +42,14 @@ main = do
 qname :: String -> QName
 qname = UnQual . Ident
 
+tqname :: String -> Type
+tqname = TyCon . UnQual . Ident
+
 nameSym :: String -> Name
 nameSym = Ident . (++) "xK_"
 
 emptyLoc :: SrcLoc
 emptyLoc = SrcLoc "" 0 0
-
-impXhb :: ImportDecl
-impXhb = emptyImp "Graphics.XHB"
-
-impDefs :: ImportDecl
-impDefs = emptyImp "Graphics.XHB.KeySym.Defs"
 
 emptyImp :: String -> ImportDecl
 emptyImp name = ImportDecl
@@ -67,31 +65,43 @@ emptyImp name = ImportDecl
 
 
 namesModule :: [KeySymDef] -> Module
-namesModule defs = Module emptyLoc mname [] Nothing spec [impXhb, impDefs] [sig, bind]
+namesModule defs = Module emptyLoc mname [] Nothing spec imps [sig, bind]
   where
     namesName = Ident "keySymNames"
     mname = ModuleName "Graphics.XHB.KeySym.Names.Internal"
     spec = Just [EVar . UnQual $ namesName]
-    sig = TypeSig emptyLoc [namesName] . TyList $ TyTuple Boxed
-            [ TyCon $ qname "KEYSYM"
-            , TyCon $ qname "String"
-            , TyApp (TyCon $ qname "Maybe") (TyCon $ qname "Char")
-            ]
-    bind = PatBind emptyLoc (PVar (Ident "keySymNames")) (UnGuardedRhs . List $ map nameTuple defs) Nothing
+    sig = TypeSig emptyLoc [namesName]
+            (TyApp (TyApp (tqname "Map") (tqname "KEYSYM"))
+                   (TyTuple Boxed [ tqname "String"
+                                  , TyApp (tqname "Maybe") (tqname "Char")
+                                  ]))
+    bind = PatBind emptyLoc (PVar (Ident "keySymNames")) (UnGuardedRhs rhs) Nothing
+    rhs = App (Var . UnQual $ Ident "fromAscList") . List . map nameTuple $ sortBy comp defs
+    comp (KeySymDef _ i _) (KeySymDef _ j _) = compare i j
+    imps = [ emptyImp "Graphics.XHB"
+           , emptyImp "Graphics.XHB.KeySym.Defs"
+           , (emptyImp "Data.Map")
+                { importSpecs = Just ( False, [ IVar (Ident "fromAscList")
+                                              , IAbs NoNamespace (Ident "Map")
+                                              ]
+                                     )
+                }
+           ]
 
 
 nameTuple :: KeySymDef -> Exp
 nameTuple (KeySymDef n v mc) = Tuple Boxed
     [ Lit (Int v)
-    , Lit $ String n
-    , case mc of
-        Just c -> App (Con (qname "Just")) (Lit (Char c))
-        Nothing -> Con (qname "Nothing")
+    , Tuple Boxed [ Lit $ String n
+                  , case mc of
+                      Just c -> App (Con (qname "Just")) (Lit (Char c))
+                      Nothing -> Con (qname "Nothing")
+                  ]
     ]
 
 
 defsModule :: [KeySymDef] -> Module
-defsModule defs = Module emptyLoc mname [] Nothing Nothing [impXhb] decls
+defsModule defs = Module emptyLoc mname [] Nothing Nothing [emptyImp "Graphics.XHB"] decls
   where
     mname = ModuleName "Graphics.XHB.KeySym.Defs"
     decls = concatMap ((\(a, b) -> [a, b]) . defDecl) defs

@@ -52,12 +52,12 @@ in with pkgs; rec {
   };
 
   xhb-keysyms =
-    let f = { mkDerivation, base, stdenv, xhb }:
+    let f = { mkDerivation, base, stdenv, xhb, containers }:
               mkDerivation {
                 pname = "xhb-keysyms";
                 version = "0.1";
                 src = xhb-keysyms-src;
-                libraryHaskellDepends = [ base xhb ];
+                libraryHaskellDepends = [ base xhb containers ];
                 license = stdenv.lib.licenses.mit;
               };
     in hp.callPackage f {};
