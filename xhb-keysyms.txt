@@ -7,9 +7,9 @@
 
 module Graphics.XHB.KeySym.Alph
 lowerCaseOf :: KEYSYM -> Maybe KEYSYM
-isUpperCase :: KEYSYM -> Bool
 upperCaseOf :: KEYSYM -> Maybe KEYSYM
 isLowerCase :: KEYSYM -> Bool
+isUpperCase :: KEYSYM -> Bool
 
 module Graphics.XHB.KeySym.Names
 keySymToString :: KEYSYM -> Maybe String

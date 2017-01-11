@@ -9,9 +9,9 @@
 <body>
 <pre><a name="line-1"></a><span class='hs-keyword'>module</span> <span class='hs-conid'>Graphics</span><span class='hs-varop'>.</span><span class='hs-conid'>XHB</span><span class='hs-varop'>.</span><span class='hs-conid'>KeySym</span><span class='hs-varop'>.</span><span class='hs-conid'>Alph</span>
 <a name="line-2"></a>    <span class='hs-layout'>(</span> <span class='hs-varid'>lowerCaseOf</span>
-<a name="line-3"></a>    <span class='hs-layout'>,</span> <span class='hs-varid'>isUpperCase</span>
-<a name="line-4"></a>    <span class='hs-layout'>,</span> <span class='hs-varid'>upperCaseOf</span>
-<a name="line-5"></a>    <span class='hs-layout'>,</span> <span class='hs-varid'>isLowerCase</span>
+<a name="line-3"></a>    <span class='hs-layout'>,</span> <span class='hs-varid'>upperCaseOf</span>
+<a name="line-4"></a>    <span class='hs-layout'>,</span> <span class='hs-varid'>isLowerCase</span>
+<a name="line-5"></a>    <span class='hs-layout'>,</span> <span class='hs-varid'>isUpperCase</span>
 <a name="line-6"></a>    <span class='hs-layout'>)</span> <span class='hs-keyword'>where</span>
 <a name="line-7"></a>
 <a name="line-8"></a>
@@ -22,16 +22,16 @@
 <a name="line-13"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Maybe</span>
 <a name="line-14"></a>
 <a name="line-15"></a>
-<a name="line-16"></a><a name="isLowerCase"></a><span class='hs-definition'>isLowerCase</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Bool</span>
-<a name="line-17"></a><span class='hs-definition'>isLowerCase</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>isJust</span> <span class='hs-varop'>.</span> <span class='hs-varid'>upperCaseOf</span>
+<a name="line-16"></a><a name="lowerCaseOf"></a><span class='hs-definition'>lowerCaseOf</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Maybe</span> <span class='hs-conid'>KEYSYM</span>
+<a name="line-17"></a><span class='hs-definition'>lowerCaseOf</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>flip</span> <span class='hs-conid'>M</span><span class='hs-varop'>.</span><span class='hs-varid'>lookup</span> <span class='hs-varid'>upperToLower</span>
 <a name="line-18"></a>
-<a name="line-19"></a><a name="lowerCaseOf"></a><span class='hs-definition'>lowerCaseOf</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Maybe</span> <span class='hs-conid'>KEYSYM</span>
-<a name="line-20"></a><span class='hs-definition'>lowerCaseOf</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>flip</span> <span class='hs-conid'>M</span><span class='hs-varop'>.</span><span class='hs-varid'>lookup</span> <span class='hs-varid'>upperToLower</span>
+<a name="line-19"></a><a name="upperCaseOf"></a><span class='hs-definition'>upperCaseOf</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Maybe</span> <span class='hs-conid'>KEYSYM</span>
+<a name="line-20"></a><span class='hs-definition'>upperCaseOf</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>flip</span> <span class='hs-conid'>M</span><span class='hs-varop'>.</span><span class='hs-varid'>lookup</span> <span class='hs-varid'>lowerToUpper</span>
 <a name="line-21"></a>
-<a name="line-22"></a><a name="isUpperCase"></a><span class='hs-definition'>isUpperCase</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Bool</span>
-<a name="line-23"></a><span class='hs-definition'>isUpperCase</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>isJust</span> <span class='hs-varop'>.</span> <span class='hs-varid'>lowerCaseOf</span>
+<a name="line-22"></a><a name="isLowerCase"></a><span class='hs-definition'>isLowerCase</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Bool</span>
+<a name="line-23"></a><span class='hs-definition'>isLowerCase</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>isJust</span> <span class='hs-varop'>.</span> <span class='hs-varid'>upperCaseOf</span>
 <a name="line-24"></a>
-<a name="line-25"></a><a name="upperCaseOf"></a><span class='hs-definition'>upperCaseOf</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Maybe</span> <span class='hs-conid'>KEYSYM</span>
-<a name="line-26"></a><span class='hs-definition'>upperCaseOf</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>flip</span> <span class='hs-conid'>M</span><span class='hs-varop'>.</span><span class='hs-varid'>lookup</span> <span class='hs-varid'>lowerToUpper</span>
+<a name="line-25"></a><a name="isUpperCase"></a><span class='hs-definition'>isUpperCase</span> <span class='hs-keyglyph'>::</span> <span class='hs-conid'>KEYSYM</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-conid'>Bool</span>
+<a name="line-26"></a><span class='hs-definition'>isUpperCase</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>isJust</span> <span class='hs-varop'>.</span> <span class='hs-varid'>lowerCaseOf</span>
 </pre></body>
 </html>
