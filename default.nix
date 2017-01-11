@@ -1,22 +1,10 @@
-{ pkgs ? (import <nixpkgs> {}).pkgs, compiler ? null }:
-
-with pkgs;
-let
-
-  hp = if compiler == null
-       then pkgs.haskellPackages
-       else pkgs.haskell.packages.${compiler};
-
-in rec {
-
-  xhb-keysyms-build-utils = hp.callPackage ./build-utils {};
-
-  xhb-keysyms-src = callPackage ./xhb-keysyms-src.nix {
-    inherit xhb-keysyms-build-utils;
+import <nixpkgs> {
+  config = { pkgs }: {
+    haskellPackageOverrides = self: super: with pkgs.haskell.lib; {
+      xhb = appendPatch super.xhb ./xhb.patch;
+      xhb-keysyms = self.callPackage ../xhb-keysyms/xhb-keysyms.nix {};
+      xhb-keysyms-src = self.callPackage ../xhb-keysyms/xhb-keysyms-src.nix {};
+      xhb-keysyms-build-utils = self.callPackage ../xhb-keysyms/build-utils {};
+    };
   };
-
-  xhb-keysyms = hp.callPackage ./xhb-keysyms.nix {
-    inherit xhb-keysyms-src;
-  };
-
 }

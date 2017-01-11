@@ -5,6 +5,6 @@
 # to allow you to develop as though you had generated
 # them into .
 
-cd $(dirname $0)
-dir=$(nix-build -A xhb-keysyms-src --no-out-link)
-ln -sfT $dir/gen gen
+here=$(dirname $0)
+result=$(nix-build $here -A haskellPackages.xhb-keysyms-src --no-out-link)
+ln -sfT $result/gen $here/gen
