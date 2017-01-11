@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+here=$(dirname $0)
+result=$(nix-build $here -A haskellPackages.xhb-keysyms --no-out-link)
+cp -r $result/share/doc/*-*-ghc-*/xhb-keysyms-*/html/* $here/doc
