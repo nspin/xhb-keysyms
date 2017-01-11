@@ -13,6 +13,9 @@ import Data.Map as M
 import Data.Maybe
 
 
+isLowerCase :: KEYSYM -> Bool
+isLowerCase = isJust . upperCaseOf
+
 lowerCaseOf :: KEYSYM -> Maybe KEYSYM
 lowerCaseOf = flip M.lookup upperToLower
 
@@ -21,6 +24,3 @@ isUpperCase = isJust . lowerCaseOf
 
 upperCaseOf :: KEYSYM -> Maybe KEYSYM
 upperCaseOf = flip M.lookup lowerToUpper
-
-isLowerCase :: KEYSYM -> Bool
-isLowerCase = isJust . upperCaseOf
