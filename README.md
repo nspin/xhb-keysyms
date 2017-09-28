@@ -2,7 +2,7 @@
 
 `KEYSYM` definitions for [xhb](https://hackage.haskell.org/package/xhb) scraped from [x11proto](https://cgit.freedesktop.org/xorg/proto/x11proto).
 
-Documentation can be found [here](https://nickspinale.github.io/xhb-keysyms).
+Documentation can be found [here](https://nspin.github.io/xhb-keysyms).
 
 ## Building
 
